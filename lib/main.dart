@@ -1,5 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:io';
+
+import 'package:bitsdojo_window/bitsdojo_window.dart';
+import 'package:flutter/material.dart' hide MenuItem;
 import 'package:local_notifier/local_notifier.dart';
+import 'package:system_tray/system_tray.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,10 +13,89 @@ void main() async {
     shortcutPolicy: ShortcutPolicy.requireCreate,
   );
   runApp(const MyApp());
+  doWhenWindowReady(() {
+    const initialSize = Size(600, 450);
+    appWindow.minSize = initialSize;
+    appWindow.size = initialSize;
+    appWindow.alignment = Alignment.center;
+    appWindow.show();
+  });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final SystemTray _systemTray = SystemTray();
+  final AppWindow _appWindow = AppWindow();
+
+  Timer? _timer;
+  bool _toogleTrayIcon = true;
+
+  @override
+  void initState() {
+    super.initState();
+    initSystemTray();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _timer?.cancel();
+  }
+
+  Future<void> initSystemTray() async {
+    String path = Platform.isWindows
+        ? 'assets/icons/notifications.ico'
+        : 'assets/icons/notifications.png';
+
+    final menu = [
+      MenuItem(label: 'Show', onClicked: _appWindow.show),
+      MenuItem(label: 'Hide', onClicked: _appWindow.hide),
+      MenuItem(
+        label: 'Start flash tray icon',
+        onClicked: () {
+          debugPrint("Start flash tray icon");
+
+          _timer ??= Timer.periodic(
+            const Duration(milliseconds: 500),
+            (timer) {
+              _toogleTrayIcon = !_toogleTrayIcon;
+              _systemTray.setImage(_toogleTrayIcon ? "" : path);
+            },
+          );
+        },
+      ),
+      MenuItem(
+        label: 'Stop flash tray icon',
+        onClicked: () {
+          debugPrint("Stop flash tray icon");
+
+          _timer?.cancel();
+          _timer = null;
+
+          _systemTray.setImage(path);
+        },
+      ),
+      MenuSeparator(),
+      MenuItem(
+        label: 'Exit',
+        onClicked: _appWindow.close,
+      ),
+    ];
+
+    await _systemTray.initSystemTray(
+      title: "",
+      iconPath: path,
+      toolTip: "How to use system tray with Flutter",
+    );
+
+    await _systemTray.setContextMenu(menu);
+  }
 
   // This widget is the root of your application.
   @override
