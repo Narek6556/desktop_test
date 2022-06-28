@@ -35,21 +35,13 @@ class FirstScreen extends StatefulWidget {
 }
 
 class _FirstScreenState extends State<FirstScreen> {
-  LocalNotification? _exampleNotification = LocalNotification(
+  final LocalNotification _exampleNotification = LocalNotification(
     identifier: '_exampleNotification',
     title: "example",
     body: "hello flutter!",
-    actions: [
-      LocalNotificationAction(
-        text: 'Yes',
-      ),
-      LocalNotificationAction(
-        text: 'No',
-      ),
-    ],
   );
 
-  List<LocalNotification> _notificationList = [];
+  // List<LocalNotification> _notificationList = [];
 
   // void callNotification() async {
   //   await localNotifier.setup(
@@ -88,33 +80,33 @@ class _FirstScreenState extends State<FirstScreen> {
   //
   //   notification.show();
   // }
-  _handleNewLocalNotification() async {
-    LocalNotification notification = LocalNotification(
-      title: "example - ${_notificationList.length}",
-      subtitle: "local_notifier_example",
-      body: "hello flutter!",
-    );
-    notification.onShow = () {
-      print('onShow ${notification.identifier}');
-    };
-    notification.onClose = (closeReason) {
-      print('onClose ${notification.identifier} - $closeReason');
-    };
-    notification.onClick = () {
-      print('onClick ${notification.identifier}');
-    };
-
-    _notificationList.add(notification);
-
-    setState(() {});
-  }
+  // _handleNewLocalNotification() async {
+  //   LocalNotification notification = LocalNotification(
+  //     title: "example - ${_notificationList.length}",
+  //     subtitle: "local_notifier_example",
+  //     body: "hello flutter!",
+  //   );
+  //   notification.onShow = () {
+  //     print('onShow ${notification.identifier}');
+  //   };
+  //   notification.onClose = (closeReason) {
+  //     print('onClose ${notification.identifier} - $closeReason');
+  //   };
+  //   notification.onClick = () {
+  //     print('onClick ${notification.identifier}');
+  //   };
+  //
+  //   _notificationList.add(notification);
+  //
+  //   setState(() {});
+  // }
 
   @override
   void initState() {
-    _exampleNotification?.onShow = () {
-      print('onShow ${_exampleNotification?.identifier}');
+    _exampleNotification.onShow = () {
+      print('onShow ${_exampleNotification.identifier}');
     };
-    _exampleNotification?.onClose = (closeReason) {
+    _exampleNotification.onClose = (closeReason) {
       switch (closeReason) {
         case LocalNotificationCloseReason.userCanceled:
           // do something
@@ -124,18 +116,18 @@ class _FirstScreenState extends State<FirstScreen> {
           break;
         default:
       }
-      String log = 'onClose ${_exampleNotification?.identifier} - $closeReason';
+      String log = 'onClose ${_exampleNotification.identifier} - $closeReason';
       print(log);
       // BotToast.showText(text: log);
     };
-    _exampleNotification?.onClick = () {
-      String log = 'onClick ${_exampleNotification?.identifier}';
+    _exampleNotification.onClick = () {
+      String log = 'onClick ${_exampleNotification.identifier}';
       print(log);
       // BotToast.showText(text: log);
     };
-    _exampleNotification?.onClickAction = (actionIndex) {
+    _exampleNotification.onClickAction = (actionIndex) {
       String log =
-          'onClickAction ${_exampleNotification?.identifier} - $actionIndex';
+          'onClickAction ${_exampleNotification.identifier} - $actionIndex';
       print(log);
       // BotToast.showText(text: log);
     };
@@ -149,7 +141,7 @@ class _FirstScreenState extends State<FirstScreen> {
           onPressed: () {
             // callNotification();
             // _handleNewLocalNotification();
-            _exampleNotification?.show();
+            _exampleNotification.show();
             const snackBar = SnackBar(content: Text('Hello'));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           },
